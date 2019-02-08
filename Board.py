@@ -5,6 +5,8 @@ pygame.init()
 size = width, height = 560, 720
 screen = pygame.display.set_mode(size)
 
+score = 0
+
 
 class NotBoardCoord(Exception):
     pass
@@ -70,8 +72,6 @@ class Board:
                       [1] * 29,
                       [0] * 29,
                       [0] * 29]
-
-        print(len(self.board))
         self.left = 0
         self.top = 0
         self.cell_size = 20
@@ -118,6 +118,19 @@ class Board:
         self.on_click(cell)
 
 
+def get_score():
+    intro_text = ["HIGH SCORE", str(score)]
+    text_coord = 0
+    font = pygame.font.Font(None, 32)
+    for i in range(2):
+        string_rendered = font.render(intro_text[i], 1, pygame.Color('White'))
+        intro_rect = string_rendered.get_rect()
+        intro_rect.top = text_coord
+        intro_rect.x = i * -200 + 200
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+
+
 fon = pygame.transform.scale(load_image('fon.png'), (560, 620))
 board = Board(28, 36)
 running = True
@@ -125,7 +138,8 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-    screen.fill((0, 0, 0))
     board.render()
+    screen.fill((0, 0, 0))
+    get_score()
     screen.blit(fon, (0, 60))
     pygame.display.flip()
