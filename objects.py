@@ -1,7 +1,6 @@
 import pygame
 import os
 
-
 pygame.init()
 
 
@@ -46,7 +45,8 @@ class Object(pygame.sprite.Sprite):
 
 class PacMan(Object):
     def __init__(self, group, x, y):
-        super().__init__(group, load_image('pacman.png'), x, y, 5, 1)
+        super().__init__(group, load_image('pacman.png',
+                                           pygame.Color('white')), 5, 1, x, y)
 
 
 class Spirit(Object):
@@ -69,16 +69,3 @@ class Pokey(Spirit):
     pass
 
 
-size = w, h = 500, 300
-screen = pygame.display.set_mode(size)
-all_sprites = pygame.sprite.Group()
-PacMan(all_sprites, 0, 0)
-running = True
-
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-    all_sprites.draw(screen)
-    all_sprites.update()
