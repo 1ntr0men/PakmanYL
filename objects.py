@@ -27,7 +27,9 @@ class Object(pygame.sprite.Sprite):
         self.cut_sheet(sheet, columns, rows)
         self.cur_frame = 0
         self.image = self.frames[self.cur_frame]
+        self.image = pygame.transform.rotate(self.image, 180)
         self.rect = self.rect.move(x, y)
+        self.direction = 'LEFT'
 
     def cut_sheet(self, sheet, columns, rows):
         self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
@@ -40,7 +42,18 @@ class Object(pygame.sprite.Sprite):
 
     def update(self):
         self.cur_frame = (self.cur_frame + 1) % len(self.frames)
+        if self.direction == 'LEFT':
+            angle = 180
+        elif self.direction == 'RIGHT':
+            angle = 0
+        elif self.direction == 'DOWN':
+            angle = 270
+        else:
+            angle = 90
+
         self.image = self.frames[self.cur_frame]
+        self.image = pygame.transform.rotate(self.image, angle)
+
 
 
 class PacMan(Object):
@@ -67,23 +80,32 @@ class Bashful(Spirit):
 
 class Pokey(Spirit):
     pass
-#
-#
-# screen = pygame.display.set_mode((500, 500))
-# running = True
-# all_sprites = pygame.sprite.Group()
-# pacman = PacMan(all_sprites, 0, 0)
-# fps = 20
-# clock = pygame.time.Clock()
-# all_sprites.add(pacman)
-# while running:
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             running = False
-#
-#     screen.fill((0, 0, 0))
-#     all_sprites.draw(screen)
-#     all_sprites.update()
-#
-#     clock.tick(fps)
-#     pygame.display.flip()
+
+
+screen = pygame.display.set_mode((500, 500))
+running = True
+all_sprites = pygame.sprite.Group()
+pacman = PacMan(all_sprites, 0, 0)
+fps = 20
+clock = pygame.time.Clock()
+all_sprites.add(pacman)
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_DOWN:
+                pacman.direction = 'DOWN'
+            if event.key == pygame.K_UP:
+                pacman.direction = 'UP'
+            if event.key == pygame.K_LEFT:
+                pacman.direction = 'LEFT'
+            if event.key == pygame.K_RIGHT:
+                pacman.direction = 'RIGHT'
+
+    screen.fill((0, 0, 0))
+    all_sprites.draw(screen)
+    all_sprites.update()
+
+    clock.tick(fps)
+    pygame.display.flip()
