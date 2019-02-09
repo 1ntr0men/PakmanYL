@@ -81,31 +81,31 @@ class Bashful(Spirit):
 class Pokey(Spirit):
     pass
 
-
-screen = pygame.display.set_mode((500, 500))
-running = True
-all_sprites = pygame.sprite.Group()
-pacman = PacMan(all_sprites, 0, 0)
-fps = 20
-clock = pygame.time.Clock()
-all_sprites.add(pacman)
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_DOWN:
-                pacman.direction = 'DOWN'
-            if event.key == pygame.K_UP:
-                pacman.direction = 'UP'
-            if event.key == pygame.K_LEFT:
-                pacman.direction = 'LEFT'
-            if event.key == pygame.K_RIGHT:
-                pacman.direction = 'RIGHT'
-
-    screen.fill((0, 0, 0))
-    all_sprites.draw(screen)
-    all_sprites.update()
-
-    clock.tick(fps)
-    pygame.display.flip()
+#
+# screen = pygame.display.set_mode((500, 500))
+# running = True
+# all_sprites = pygame.sprite.Group()
+# pacman = PacMan(all_sprites, 0, 0)
+# fps = 15
+# clock = pygame.time.Clock()
+# all_sprites.add(pacman)
+# while running:
+#     for event in pygame.event.get():
+#         if event.type == pygame.QUIT:
+#             running = False
+#         if event.type == pygame.KEYDOWN:
+#             if event.key == pygame.K_DOWN:
+#                 pacman.direction = 'DOWN'
+#             if event.key == pygame.K_UP:
+#                 pacman.direction = 'UP'
+#             if event.key == pygame.K_LEFT:
+#                 pacman.direction = 'LEFT'
+#             if event.key == pygame.K_RIGHT:
+#                 pacman.direction = 'RIGHT'
+#
+#     screen.fill((0, 0, 0))
+#     all_sprites.draw(screen)
+#     all_sprites.update()
+#
+#     clock.tick(fps)
+#     pygame.display.flip()
