@@ -15,7 +15,10 @@ class Object(pygame.sprite.Sprite):
         self.image = self.frames[self.cur_frame]
         # self.image.set_colorkey((0, 0, 0))
         self.image = pygame.transform.scale(self.image, (50, 50))
+        self.rect = self.image.get_rect()
         self.rect = self.rect.move(x, y)
+        self.x = x
+        self.y = y
         self.direction = 'LEFT'
 
     def cut_sheet(self, sheet, columns, rows):
@@ -54,36 +57,26 @@ class PacMan(Object):
 class Spirit(Object):
     def __init__(self, group, x, y):
         sheet = pygame.image.load(
-            'data/{}_up.png'.format(self.__class__.__name__)
+            'data/{}.png'.format(self.__class__.__name__)
         )
-        super().__init__(group, sheet, 2, 1, x, y)
+        super().__init__(group, sheet, 8, 1, x, y)
         self.direction = 'UP'
+        self.current_frames = self.get_frames(self.direction)
 
-    def get_image(self, direction):
+    def get_frames(self, direction):
         if direction == 'RIGHT':
-            return pygame.image.load(
-                'data/{}_right.png'.format(self.__class__.__name__)
-            )
+            return self.frames[:2]
         elif direction == 'LEFT':
-            return pygame.image.load(
-                'data/{}_left.png'.format(self.__class__.__name__)
-            )
+            return self.frames[2:4]
         elif direction == 'UP':
-            return pygame.image.load(
-                'data/{}_up.png'.format(self.__class__.__name__)
-            )
+            return self.frames[4:6]
         else:
-            return pygame.image.load(
-                'data/{}_down.png'.format(self.__class__.__name__)
-            )
+            return self.frames[6:8]
 
     def update(self):
-
-        self.image = self.get_image(self.direction)
-        self.frames = []
-        self.cut_sheet(self.image, 2, 1)
-        self.cur_frame = (self.cur_frame + 1) % len(self.frames)
-        self.image = self.frames[self.cur_frame]
+        self.current_frames = self.get_frames(self.direction)
+        self.cur_frame = (self.cur_frame + 1) % 2
+        self.image = self.current_frames[self.cur_frame]
         self.image = pygame.transform.scale(self.image, (50, 50))
 
 
@@ -102,16 +95,16 @@ class Bashful(Spirit):
 
 class Pokey(Spirit):
     pass
-#
-#
+
+# 
 # screen = pygame.display.set_mode((500, 500))
 # running = True
 # all_sprites = pygame.sprite.Group()
 # pacman = PacMan(all_sprites, 60, 0)
-# red = Shadow(all_sprites, 80, 80)
+# pink = Pokey(all_sprites, 60, 60)
 # fps = 30
 # clock = pygame.time.Clock()
-# all_sprites.add(pacman, red)
+# all_sprites.add(pacman, pink)
 # while running:
 #     for event in pygame.event.get():
 #         if event.type == pygame.QUIT:
@@ -119,16 +112,16 @@ class Pokey(Spirit):
 #         if event.type == pygame.KEYDOWN:
 #             if event.key == pygame.K_DOWN:
 #                 pacman.direction = 'DOWN'
-#                 # red.direction = 'DOWN'
+#                 pink.direction = 'DOWN'
 #             if event.key == pygame.K_UP:
 #                 pacman.direction = 'UP'
-#                 # red.direction = 'UP'
+#                 pink.direction = 'UP'
 #             if event.key == pygame.K_LEFT:
 #                 pacman.direction = 'LEFT'
-#                 # red.direction = 'LEFT'
+#                 pink.direction = 'LEFT'
 #             if event.key == pygame.K_RIGHT:
 #                 pacman.direction = 'RIGHT'
-#                 # red.direction = 'RIGHT'
+#                 pink.direction = 'RIGHT'
 #
 #     screen.fill((255, 255, 255))
 #     all_sprites.draw(screen)
