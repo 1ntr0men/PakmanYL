@@ -4,21 +4,6 @@ import os
 pygame.init()
 
 
-def load_image(name, colorkey=None):
-    fullname = os.path.join('data', name)
-    try:
-        image = pygame.image.load(fullname)
-    except pygame.error as message:
-        print('Cannot load image:', name)
-        raise SystemExit(message)
-    image = image.convert_alpha()
-    if colorkey is not None:
-        if colorkey is -1:
-            colorkey = image.get_at((0, 0))
-        image.set_colorkey(colorkey)
-    return image
-
-
 class Object(pygame.sprite.Sprite):
 
     def __init__(self, group, sheet, columns, rows, x, y):
@@ -28,6 +13,7 @@ class Object(pygame.sprite.Sprite):
         self.cur_frame = 0
         self.image = self.frames[self.cur_frame]
         self.image = pygame.transform.rotate(self.image, 180)
+        self.image = pygame.transform.scale(self.image, (50, 50))
         self.rect = self.rect.move(x, y)
         self.direction = 'LEFT'
 
@@ -53,13 +39,14 @@ class Object(pygame.sprite.Sprite):
 
         self.image = self.frames[self.cur_frame]
         self.image = pygame.transform.rotate(self.image, angle)
-
+        self.image = pygame.transform.scale(self.image, (50, 50))
 
 
 class PacMan(Object):
     def __init__(self, group, x, y):
-        super().__init__(group, load_image('pacman.png',
-                                           pygame.Color('white')), 4, 1, x, y)
+        image = pygame.image.load('data/pacman.png')
+        image.set_colorkey(image.get_at((0, 0)))
+        super().__init__(group, image, 4, 1, x, y)
 
 
 class Spirit(Object):
@@ -81,31 +68,31 @@ class Bashful(Spirit):
 class Pokey(Spirit):
     pass
 
-#
-# screen = pygame.display.set_mode((500, 500))
-# running = True
-# all_sprites = pygame.sprite.Group()
-# pacman = PacMan(all_sprites, 0, 0)
-# fps = 15
-# clock = pygame.time.Clock()
-# all_sprites.add(pacman)
-# while running:
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             running = False
-#         if event.type == pygame.KEYDOWN:
-#             if event.key == pygame.K_DOWN:
-#                 pacman.direction = 'DOWN'
-#             if event.key == pygame.K_UP:
-#                 pacman.direction = 'UP'
-#             if event.key == pygame.K_LEFT:
-#                 pacman.direction = 'LEFT'
-#             if event.key == pygame.K_RIGHT:
-#                 pacman.direction = 'RIGHT'
-#
-#     screen.fill((0, 0, 0))
-#     all_sprites.draw(screen)
-#     all_sprites.update()
-#
-#     clock.tick(fps)
-#     pygame.display.flip()
+
+screen = pygame.display.set_mode((500, 500))
+running = True
+all_sprites = pygame.sprite.Group()
+pacman = PacMan(all_sprites, 0, 0)
+fps = 30
+clock = pygame.time.Clock()
+all_sprites.add(pacman)
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_DOWN:
+                pacman.direction = 'DOWN'
+            if event.key == pygame.K_UP:
+                pacman.direction = 'UP'
+            if event.key == pygame.K_LEFT:
+                pacman.direction = 'LEFT'
+            if event.key == pygame.K_RIGHT:
+                pacman.direction = 'RIGHT'
+
+    screen.fill((0, 0, 0))
+    all_sprites.draw(screen)
+    all_sprites.update()
+
+    clock.tick(fps)
+    pygame.display.flip()
