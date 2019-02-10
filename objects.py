@@ -96,7 +96,7 @@ class Bashful(Spirit):
 class Pokey(Spirit):
     pass
 
-# 
+#
 # screen = pygame.display.set_mode((500, 500))
 # running = True
 # all_sprites = pygame.sprite.Group()
