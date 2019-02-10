@@ -9,7 +9,6 @@ screen = pygame.display.set_mode(size)
 score = 0
 
 
-
 class NotBoardCoord(Exception):
     pass
 
