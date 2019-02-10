@@ -1,11 +1,13 @@
 import pygame
 import os
+from objects import Object, PacMan
 
 pygame.init()
 size = width, height = 560, 720
 screen = pygame.display.set_mode(size)
 
 score = 0
+
 
 
 class NotBoardCoord(Exception):
@@ -130,6 +132,8 @@ def get_score():
         text_coord += intro_rect.height
         screen.blit(string_rendered, intro_rect)
 
+
+pacman = PacMan(all_sprite, 0, 0)
 
 fon = pygame.transform.scale(load_image('fon.png'), (560, 620))
 board = Board(28, 36)
