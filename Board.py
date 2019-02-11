@@ -40,7 +40,7 @@ class Board:
                       [1] * 29,
                       [1] + [2] * 12 + [1] * 2 + [2] * 12 + [1],
                       [1] + [2] + [1] * 4 + [2] + [1] * 5 + [2] + [1] * 2 + [2] + [1] * 5 + [2] + [1] * 4 + [2] + [1],
-                      [1] + [2] + [1] * 4 + [2] + [1] * 5 + [2] + [1] * 2 + [2] + [1] * 5 + [2] + [1] * 4 + [2] + [1],
+                      [1] + [0] + [1] * 4 + [2] + [1] * 5 + [2] + [1] * 2 + [2] + [1] * 5 + [2] + [1] * 4 + [0] + [1],
                       [1] + [2] + [1] * 4 + [2] + [1] * 5 + [2] + [1] * 2 + [2] + [1] * 5 + [2] + [1] * 4 + [2] + [1],
                       [1] + [2] * 26 + [1],
                       [1] + [2] + [1] * 4 + [2] + [1] * 2 + [2] + [1] * 8 + [2] + [1] * 2 + [2] + [1] * 4 + [2] + [1],
@@ -60,7 +60,7 @@ class Board:
                       [1] + [2] * 12 + [1] * 2 + [2] * 12 + [1],
                       [1] + [2] + [1] * 4 + [2] + [1] * 5 + [2] + [1] * 2 + [2] + [1] * 5 + [2] + [1] * 4 + [2] + [1],
                       [1] + [2] + [1] * 4 + [2] + [1] * 5 + [2] + [1] * 2 + [2] + [1] * 5 + [2] + [1] * 4 + [2] + [1],
-                      [1] + [2] * 3 + [1] * 2 + [2] * 16 + [1] * 2 + [2] * 3 + [1],
+                      [1] + [0] + [2] * 2 + [1] * 2 + [2] * 16 + [1] * 2 + [2] * 2 + [0] + [1],
                       [1] * 3 + [2] + [1] * 2 + [2] + [1] * 2 + [2] + [1] * 8 + [2] + [1] * 2 + [2] + [1] * 2 + [2]
                       + [1] * 3,
                       [1] * 3 + [2] + [1] * 2 + [2] + [1] * 2 + [2] + [1] * 8 + [2] + [1] * 2 + [2] + [1] * 2 + [2]
@@ -139,10 +139,10 @@ def get_score():
 
 
 food = pygame.sprite.Group()
-
+energizer = pygame.sprite.Group()
 
 class Food(pygame.sprite.Sprite):
-    image = load_image("food_small.png")
+    image = load_image("small_food.png")
 
     def __init__(self, x, y):
         super().__init__(food)
@@ -150,6 +150,19 @@ class Food(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = x * 20 + 7
         self.rect.y = y * 20 + 7
+
+
+class Energizer(pygame.sprite.Sprite):
+    image = pygame.transform.scale(load_image("big_food.png"), (20, 20))
+
+    def __init__(self, x, y):
+        super().__init__(energizer)
+        self.image = Energizer.image
+        self.rect = self.image.get_rect()
+
+        self.rect.x = x
+        self.rect.y = y
+        print(self.rect)
 
 
 board = Board(28, 36)
@@ -162,6 +175,11 @@ def Cooker():
             if mass[i][j] == 2:
                 Food(j, i)
 
+
+Energizer(520, 120)
+Energizer(20, 120)
+Energizer(20, 520)
+Energizer(520, 520)
 Cooker()
 
 fon = pygame.transform.scale(load_image('fon.png'), (560, 620))
@@ -175,4 +193,5 @@ while running:
     get_score()
     screen.blit(fon, (0, 60))
     food.draw(screen)
+    energizer.draw(screen)
     pygame.display.flip()
