@@ -75,7 +75,7 @@ class Board:
                     pygame.draw.rect(self.screen, pygame.Color('yellow'),
                                      food)
                 if self.board[i][j] == 3:
-                    food = pygame.image.load('data/big_food.png')
+                    food = load_image('big_food.png')
                     self.screen.blit(food, (j * self.cell_size,
                                             60 + i * self.cell_size))
 
@@ -122,7 +122,7 @@ def get_score():
         text_coord += intro_rect.height
         screen.blit(string_rendered, intro_rect)
     life = 3
-    life_image = pygame.transform.scale(pygame.image.load('data/life.png'),
+    life_image = pygame.transform.scale(load_image('life.png'),
                                         (40, 40))
     for j in range(life):
         screen.blit(life_image, (j * 40 + 40, 680))
@@ -133,7 +133,7 @@ screen = pygame.display.set_mode(size)
 
 score = 0
 
-fon = pygame.transform.scale(pygame.image.load('data/fon.png'), (560, 620))
+fon = pygame.transform.scale(load_image('fon.png'), (560, 620))
 board = Board(screen)
 running = True
 while running:
