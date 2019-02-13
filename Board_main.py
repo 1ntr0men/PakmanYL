@@ -1,3 +1,4 @@
+from objects import *
 import pygame
 import os
 import sys
@@ -133,17 +134,27 @@ screen = pygame.display.set_mode(size)
 
 score = 0
 
+clock = pygame.time.Clock()
+fps = 30
+pac_group = pygame.sprite.Group()
 fon = pygame.transform.scale(load_image('fon.png'), (560, 620))
 board = Board(screen)
+pacman = PacMan(pac_group, board, 264, 397)
 running = True
 while running:
     for event in pygame.event.get():
+        pacman.get_event(event)
         if event.type == pygame.QUIT:
             terminate()
-    screen.fill((0, 0, 0))
-    get_score()
-    screen.blit(fon, (0, 60))
-    board.render()
     if f:
         start_screen()
+    else:
+        screen.fill((0, 0, 0))
+        get_score()
+        screen.blit(fon, (0, 60))
+        board.render()
+        pac_group.draw(screen)
+        pac_group.update()
+        clock.tick(fps)
+
     pygame.display.flip()

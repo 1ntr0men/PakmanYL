@@ -1,5 +1,4 @@
 import pygame
-import os
 
 pygame.init()
 
@@ -7,7 +6,7 @@ pygame.init()
 # Класс объекта
 class Object(pygame.sprite.Sprite):
 
-    def __init__(self, group, sheet, columns, rows, x, y):
+    def __init__(self, group, board, sheet, columns, rows, x, y):
         super().__init__(group)
         self.frames = []
         self.cut_sheet(sheet, columns, rows)
@@ -17,9 +16,10 @@ class Object(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (50, 50))
         self.rect = self.image.get_rect()
         self.rect = self.rect.move(x, y)
-        self.x = x
-        self.y = y
+        self.speed_x = None
+        self.speed_y = None
         self.direction = 'LEFT'
+        self.board = board
 
     def cut_sheet(self, sheet, columns, rows):
         self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
@@ -33,33 +33,55 @@ class Object(pygame.sprite.Sprite):
 
 # Класс Пак-мана
 class PacMan(Object):
-    def __init__(self, group, x, y):
+    def __init__(self, group, board, x, y):
         image = pygame.image.load('data/pacman.png')
-        super().__init__(group, image, 4, 1, x, y)
+        super().__init__(group, board, image, 4, 1, x, y)
+        self.speed_x = -5
+        self.speed_y = 0
         self.image = pygame.transform.rotate(self.image, 180)
+
+    def get_event(self, event):
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_DOWN:
+                self.direction = 'DOWN'
+            if event.key == pygame.K_UP:
+                self.direction = 'UP'
+            if event.key == pygame.K_LEFT:
+                self.direction = 'LEFT'
+            if event.key == pygame.K_RIGHT:
+                self.direction = 'RIGHT'
 
     def update(self):
         self.cur_frame = (self.cur_frame + 1) % len(self.frames)
         if self.direction == 'LEFT':
             angle = 180
+            self.speed_x = -5
+            self.speed_y = 0
         elif self.direction == 'RIGHT':
             angle = 0
+            self.speed_x = 5
+            self.speed_y = 0
         elif self.direction == 'DOWN':
             angle = 270
+            self.speed_x = 0
+            self.speed_y = 5
         else:
             angle = 90
+            self.speed_x = 0
+            self.speed_y = -5
 
         self.image = self.frames[self.cur_frame]
         self.image = pygame.transform.rotate(self.image, angle)
+        self.rect = self.rect.move(self.speed_x, self.speed_y)
 
 
 # Класс призраков
 class Spirit(Object):
-    def __init__(self, group, x, y):
+    def __init__(self, group, board, x, y):
         sheet = pygame.image.load(
             'data/{}.png'.format(self.__class__.__name__)
         )
-        super().__init__(group, sheet, 8, 1, x, y)
+        super().__init__(group, board, sheet, 8, 1, x, y)
         self.direction = 'UP'
         self.current_frames = self.get_frames(self.direction)
 
