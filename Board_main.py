@@ -21,14 +21,59 @@ def load_image(name, colorkey=None):
         image.set_colorkey(colorkey)
     return image
 
+
 def terminate():
     pygame.quit()
     sys.exit()
 
+
+food = pygame.sprite.Group()
+energizer = pygame.sprite.Group()
+walls = pygame.sprite.Group()
+
+
+class Food(pygame.sprite.Sprite):
+    image = pygame.image.load('data/small_food.png')
+
+    def __init__(self, x, y):
+        super().__init__(food)
+        self.image = Food.image
+        self.rect = self.image.get_rect()
+        self.rect.x = x * 20 + 7
+        self.rect.y = y * 20 + 7
+
+
+class Energizer(pygame.sprite.Sprite):
+    image = pygame.transform.scale(pygame.image.load('data/big_food.png'), (20, 20))
+
+    def __init__(self, x, y):
+        super().__init__(energizer)
+        self.image = Energizer.image
+        self.rect = self.image.get_rect()
+        self.rect.x = x * 20
+        self.rect.y = y * 20
+
+
+class Wall(pygame.sprite.Sprite):
+    def __init__(self, group, x, y):
+        super().__init__(group)
+        self.image = pygame.Surface((1, 1),
+                                    pygame.SRCALPHA, 32)
+
+        self.rect = self.image.get_rect()
+        pygame.draw.rect(self.image, pygame.Color("Red"),
+                         self.rect, 0)
+        self.rect.x = x
+        self.rect.y = y
+
+
 class Board:
     def __init__(self, screen):
         self.screen = screen
-        self.board = [[1] * 29,
+        self.board = [[0] * 29,
+                      [0] * 29,
+                      [0] * 29,
+                      [1] * 29,
                       [1] + [2] * 12 + [1] * 2 + [2] * 12 + [1],
                       [1] + [2] + [1] * 4 + [2] + [1] * 5 + [2] + [1] * 2 + [2] + [1] * 5 + [2] + [1] * 4 + [2] + [1],
                       [1] + [3] + [1] * 4 + [2] + [1] * 5 + [2] + [1] * 2 + [2] + [1] * 5 + [2] + [1] * 4 + [3] + [1],
@@ -60,25 +105,25 @@ class Board:
                       [1] + [2] + [1] * 10 + [2] + [1] * 2 + [2] + [1] * 10 + [2] + [1],
                       [1] + [2] + [1] * 10 + [2] + [1] * 2 + [2] + [1] * 10 + [2] + [1],
                       [1] + [2] * 26 + [1],
-                      [1] * 29]
+                      [1] * 29,
+                      [0] * 29,
+                      [0] * 29]
         self.left = 0
         self.top = 0
         self.cell_size = 20
+        print(len(self.board))
 
     def render(self):
         for i in range(len(self.board)):
             for j in range(len(self.board[i])):
-                rect = pygame.Rect(j * self.cell_size, 60 + i * self.cell_size,
-                                   self.cell_size, self.cell_size)
-                x, y = rect.center
-                if self.board[i][j] == 2:
-                    food = pygame.Rect(x - 2, y - 2, 3, 3)
-                    pygame.draw.rect(self.screen, pygame.Color('yellow'),
-                                     food)
-                if self.board[i][j] == 3:
-                    food = load_image('big_food.png')
-                    self.screen.blit(food, (j * self.cell_size,
-                                            60 + i * self.cell_size))
+                if self.board[i][j] == 0:
+                    pass
+                elif self.board[i][j] == 2:
+                    Food(j, i)
+                elif self.board[i][j] == 3:
+                    Energizer(j, i)
+                elif self.board[i][j] == 1:
+                    Wall(walls, j * 20 + 10, i * 20 + 10)
 
 
 def start_screen():
@@ -123,7 +168,7 @@ def get_score():
         text_coord += intro_rect.height
         screen.blit(string_rendered, intro_rect)
     life = 3
-    life_image = pygame.transform.scale(load_image('life.png'),
+    life_image = pygame.transform.scale(load_image('life2.png'),
                                         (40, 40))
     for j in range(life):
         screen.blit(life_image, (j * 40 + 40, 680))
@@ -139,22 +184,28 @@ fps = 30
 pac_group = pygame.sprite.Group()
 fon = pygame.transform.scale(load_image('fon.png'), (560, 620))
 board = Board(screen)
-pacman = PacMan(pac_group, board, 264, 397)
+pacman = PacMan(pac_group, board, 270, 517)
 running = True
 while running:
     for event in pygame.event.get():
         pacman.get_event(event)
         if event.type == pygame.QUIT:
             terminate()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            print(event.pos)
     if f:
         start_screen()
     else:
         screen.fill((0, 0, 0))
         get_score()
         screen.blit(fon, (0, 60))
+        walls.draw(screen)
+        energizer.draw(screen)
+        food.draw(screen)
         board.render()
         pac_group.draw(screen)
-        pac_group.update()
+        pac_group.update(len(pygame.sprite.spritecollide(pacman, walls, False)))
+        print(len(pygame.sprite.spritecollide(pacman, walls, False)))
         clock.tick(fps)
 
     pygame.display.flip()
