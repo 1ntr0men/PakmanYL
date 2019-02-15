@@ -1,6 +1,41 @@
 import pygame
+import math
 
 pygame.init()
+
+board = [[1] * 29,
+         [1] + [2] * 12 + [1] * 2 + [2] * 12 + [1],
+         [1] + [2] + [1] * 4 + [2] + [1] * 5 + [2] + [1] * 2 + [2] + [1] * 5 + [2] + [1] * 4 + [2] + [1],
+         [1] + [3] + [1] * 4 + [2] + [1] * 5 + [2] + [1] * 2 + [2] + [1] * 5 + [2] + [1] * 4 + [3] + [1],
+         [1] + [2] + [1] * 4 + [2] + [1] * 5 + [2] + [1] * 2 + [2] + [1] * 5 + [2] + [1] * 4 + [2] + [1],
+         [1] + [2] * 26 + [1],
+         [1] + [2] + [1] * 4 + [2] + [1] * 2 + [2] + [1] * 8 + [2] + [1] * 2 + [2] + [1] * 4 + [2] + [1],
+         [1] + [2] + [1] * 4 + [2] + [1] * 2 + [2] + [1] * 8 + [2] + [1] * 2 + [2] + [1] * 4 + [2] + [1],
+         [1] + [2] * 6 + [1] * 2 + [2] * 4 + [1] * 2 + [2] * 4 + [1] * 2 + [2] * 6 + [1],
+         [1] * 6 + [2] + [1] * 5 + [0] + [1] * 2 + [0] + [1] * 5 + [2] + [1] * 6,
+         [1] * 6 + [2] + [1] * 5 + [0] + [1] * 2 + [0] + [1] * 5 + [2] + [1] * 6,
+         [1] * 6 + [2] + [1] * 2 + [0] * 10 + [1] * 2 + [2] + [1] * 6,
+         [1] * 6 + [2] + [1] * 2 + [0] + [1] * 3 + [0] * 2 + [1] * 3 + [0] + [1] * 2 + [2] + [1] * 6,
+         [1] * 6 + [2] + [1] * 2 + [0] + [1] + [0] * 6 + [1] + [0] + [1] * 2 + [2] + [1] * 6,
+         [0] * 6 + [2] + [0] * 3 + [1] + [0] * 6 + [1] + [0] * 3 + [2] + [0] * 6,
+         [1] * 6 + [2] + [1] * 2 + [0] + [1] + [0] * 6 + [1] + [0] + [1] * 2 + [2] + [1] * 6,
+         [1] * 6 + [2] + [1] * 2 + [0] + [1] * 8 + [0] + [1] * 2 + [2] + [1] * 6,
+         [1] * 6 + [2] + [1] * 2 + [0] * 10 + [1] * 2 + [2] + [1] * 6,
+         [1] * 6 + [2] + [1] * 2 + [0] + [1] * 8 + [0] + [1] * 2 + [2] + [1] * 6,
+         [1] * 6 + [2] + [1] * 2 + [0] + [1] * 8 + [0] + [1] * 2 + [2] + [1] * 6,
+         [1] + [2] * 12 + [1] * 2 + [2] * 12 + [1],
+         [1] + [2] + [1] * 4 + [2] + [1] * 5 + [2] + [1] * 2 + [2] + [1] * 5 + [2] + [1] * 4 + [2] + [1],
+         [1] + [2] + [1] * 4 + [2] + [1] * 5 + [2] + [1] * 2 + [2] + [1] * 5 + [2] + [1] * 4 + [2] + [1],
+         [1] + [3] + [2] * 2 + [1] * 2 + [2] * 16 + [1] * 2 + [2] * 2 + [3] + [1],
+         [1] * 3 + [2] + [1] * 2 + [2] + [1] * 2 + [2] + [1] * 8 + [2] + [1] * 2 + [2] + [1] * 2 + [2]
+         + [1] * 3,
+         [1] * 3 + [2] + [1] * 2 + [2] + [1] * 2 + [2] + [1] * 8 + [2] + [1] * 2 + [2] + [1] * 2 + [2]
+         + [1] * 3,
+         [1] + [2] * 6 + [1] * 2 + [2] * 4 + [1] * 2 + [2] * 4 + [1] * 2 + [2] * 6 + [1],
+         [1] + [2] + [1] * 10 + [2] + [1] * 2 + [2] + [1] * 10 + [2] + [1],
+         [1] + [2] + [1] * 10 + [2] + [1] * 2 + [2] + [1] * 10 + [2] + [1],
+         [1] + [2] * 26 + [1],
+         [1] * 29]
 
 
 # Класс объекта
@@ -13,7 +48,7 @@ class Object(pygame.sprite.Sprite):
         self.cur_frame = 0
         self.image = self.frames[self.cur_frame]
         # self.image.set_colorkey((0, 0, 0))
-        self.image = pygame.transform.scale(self.image, (50, 50))
+        self.image = pygame.transform.scale(self.image, (30, 30))
         self.rect = self.image.get_rect()
         self.rect = self.rect.move(x, y)
         self.speed_x = None
@@ -36,9 +71,13 @@ class PacMan(Object):
     def __init__(self, group, board, x, y):
         image = pygame.image.load('data/pacman.png')
         super().__init__(group, board, image, 4, 1, x, y)
-        self.speed_x = -5
+        self.speed_x = -4
         self.speed_y = 0
         self.image = pygame.transform.rotate(self.image, 180)
+        self.rect = self.image.get_rect()
+        print(self.image.get_rect())
+        self.rect.x = x
+        self.rect.y = y
 
     def get_event(self, event):
         if event.type == pygame.KEYDOWN:
@@ -51,28 +90,53 @@ class PacMan(Object):
             if event.key == pygame.K_RIGHT:
                 self.direction = 'RIGHT'
 
-    def update(self):
-        self.cur_frame = (self.cur_frame + 1) % len(self.frames)
-        if self.direction == 'LEFT':
-            angle = 180
-            self.speed_x = -5
-            self.speed_y = 0
-        elif self.direction == 'RIGHT':
-            angle = 0
-            self.speed_x = 5
-            self.speed_y = 0
-        elif self.direction == 'DOWN':
-            angle = 270
-            self.speed_x = 0
-            self.speed_y = 5
-        else:
-            angle = 90
-            self.speed_x = 0
-            self.speed_y = -5
+    def get_cell(self, c):
+        xx = c[0] // 20 + 1
+        yy = c[1] // 20 + 1
+        return xx, yy
 
-        self.image = self.frames[self.cur_frame]
-        self.image = pygame.transform.rotate(self.image, angle)
-        self.rect = self.rect.move(self.speed_x, self.speed_y)
+    def update(self, n):
+
+        if n == 0:
+            self.cur_frame = (self.cur_frame + 1) % len(self.frames)
+            if self.direction == 'LEFT':
+                angle = 180
+                self.speed_x = -4
+                self.speed_y = 0
+            elif self.direction == 'RIGHT':
+                angle = 0
+                self.speed_x = 4
+                self.speed_y = 0
+            elif self.direction == 'DOWN':
+                angle = 270
+                self.speed_x = 0
+                self.speed_y = 4
+            else:
+                angle = 90
+                self.speed_x = 0
+                self.speed_y = -4
+
+            self.image = self.frames[self.cur_frame]
+            self.image = pygame.transform.rotate(self.image, angle)
+            self.rect = self.rect.move(self.speed_x, self.speed_y)
+
+        else:
+
+            self.speed_x = 0
+            self.speed_y = 0
+
+            if self.direction == 'LEFT':
+                self.rect.x += 5
+                self.speed_x = 0
+            elif self.direction == 'RIGHT':
+                self.rect.x -= 5
+                self.speed_x = 0
+            elif self.direction == 'DOWN':
+                self.rect.y -= 5
+                self.speed_y = 0
+            else:
+                self.rect.y += 5
+                self.speed_y = 0
 
 
 # Класс призраков
@@ -99,7 +163,7 @@ class Spirit(Object):
         self.current_frames = self.get_frames(self.direction)
         self.cur_frame = (self.cur_frame + 1) % 2
         self.image = self.current_frames[self.cur_frame]
-        self.image = pygame.transform.scale(self.image, (50, 50))
+        self.image = pygame.transform.scale(self.image, (30, 30))
 
 
 # Класс красного призрака
