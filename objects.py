@@ -48,7 +48,7 @@ class Object(pygame.sprite.Sprite):
         self.cur_frame = 0
         self.image = self.frames[self.cur_frame]
         # self.image.set_colorkey((0, 0, 0))
-        self.image = pygame.transform.scale(self.image, (30, 30))
+        self.image = pygame.transform.scale(self.image, (35, 35))
         self.rect = self.image.get_rect()
         self.rect = self.rect.move(x, y)
         self.speed_x = None
@@ -75,19 +75,23 @@ class PacMan(Object):
         self.speed_y = 0
         self.image = pygame.transform.rotate(self.image, 180)
         self.rect = self.image.get_rect()
-        print(self.image.get_rect())
         self.rect.x = x
         self.rect.y = y
+        self.moution = True
 
     def get_event(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_DOWN:
+                self.moution = True
                 self.direction = 'DOWN'
             if event.key == pygame.K_UP:
+                self.moution = True
                 self.direction = 'UP'
             if event.key == pygame.K_LEFT:
+                self.moution = True
                 self.direction = 'LEFT'
             if event.key == pygame.K_RIGHT:
+                self.moution = True
                 self.direction = 'RIGHT'
 
     def get_cell(self, c):
@@ -95,8 +99,10 @@ class PacMan(Object):
         yy = c[1] // 20 + 1
         return xx, yy
 
-    def update(self, n):
+    def get_moution_f(self):
+        return self.moution
 
+    def update(self, n):
         if n == 0:
             self.cur_frame = (self.cur_frame + 1) % len(self.frames)
             if self.direction == 'LEFT':
@@ -119,24 +125,18 @@ class PacMan(Object):
             self.image = self.frames[self.cur_frame]
             self.image = pygame.transform.rotate(self.image, angle)
             self.rect = self.rect.move(self.speed_x, self.speed_y)
-
         else:
-
+            self.moution = False
             self.speed_x = 0
             self.speed_y = 0
-
             if self.direction == 'LEFT':
                 self.rect.x += 5
-                self.speed_x = 0
             elif self.direction == 'RIGHT':
                 self.rect.x -= 5
-                self.speed_x = 0
             elif self.direction == 'DOWN':
                 self.rect.y -= 5
-                self.speed_y = 0
             else:
                 self.rect.y += 5
-                self.speed_y = 0
 
 
 # Класс призраков

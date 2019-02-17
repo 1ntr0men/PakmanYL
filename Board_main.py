@@ -111,7 +111,6 @@ class Board:
         self.left = 0
         self.top = 0
         self.cell_size = 20
-        print(len(self.board))
 
     def render(self):
         for i in range(len(self.board)):
@@ -184,15 +183,15 @@ fps = 30
 pac_group = pygame.sprite.Group()
 fon = pygame.transform.scale(load_image('fon.png'), (560, 620))
 board = Board(screen)
-pacman = PacMan(pac_group, board, 270, 517)
+pacman = PacMan(pac_group, board, 270, 511)
 running = True
+board.render()
 while running:
     for event in pygame.event.get():
         pacman.get_event(event)
+        # pacman.get_moution_f(True)
         if event.type == pygame.QUIT:
             terminate()
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            print(event.pos)
     if f:
         start_screen()
     else:
@@ -202,10 +201,11 @@ while running:
         walls.draw(screen)
         energizer.draw(screen)
         food.draw(screen)
-        board.render()
+
         pac_group.draw(screen)
-        pac_group.update(len(pygame.sprite.spritecollide(pacman, walls, False)))
-        print(len(pygame.sprite.spritecollide(pacman, walls, False)))
+        if pacman.get_moution_f():
+            pac_group.update(len(pygame.sprite.spritecollide(pacman, walls, False)))
+        pygame.sprite.spritecollide(pacman, food, True)
         clock.tick(fps)
 
     pygame.display.flip()
