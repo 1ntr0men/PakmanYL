@@ -7,31 +7,6 @@ pygame.init()
 f = True
 
 
-def load_image(name, colorkey=None):
-    fullname = os.path.join('data', name)
-    try:
-        image = pygame.image.load(fullname)
-    except pygame.error as message:
-        print('Cannot load image:', name)
-        raise SystemExit(message)
-    image = image.convert_alpha()
-    if colorkey is not None:
-        if colorkey is -1:
-            colorkey = image.get_at((0, 0))
-        image.set_colorkey(colorkey)
-    return image
-
-
-def terminate():
-    pygame.quit()
-    sys.exit()
-
-
-food = pygame.sprite.Group()
-energizer = pygame.sprite.Group()
-walls = pygame.sprite.Group()
-
-
 class Food(pygame.sprite.Sprite):
     image = pygame.image.load('data/small_food.png')
 
@@ -125,6 +100,26 @@ class Board:
                     Wall(walls, j * 20 + 10, i * 20 + 10)
 
 
+def load_image(name, colorkey=None):
+    fullname = os.path.join('data', name)
+    try:
+        image = pygame.image.load(fullname)
+    except pygame.error as message:
+        print('Cannot load image:', name)
+        raise SystemExit(message)
+    image = image.convert_alpha()
+    if colorkey is not None:
+        if colorkey is -1:
+            colorkey = image.get_at((0, 0))
+        image.set_colorkey(colorkey)
+    return image
+
+
+def terminate():
+    pygame.quit()
+    sys.exit()
+
+
 def start_screen():
     screen.fill((255, 255, 255))
     global f
@@ -180,8 +175,13 @@ score = 0
 
 clock = pygame.time.Clock()
 fps = 30
+
 pac_group = pygame.sprite.Group()
 spirits = pygame.sprite.Group()
+food = pygame.sprite.Group()
+energizer = pygame.sprite.Group()
+walls = pygame.sprite.Group()
+
 fon = pygame.transform.scale(load_image('fon.png'), (560, 620))
 board = Board(screen)
 
@@ -192,6 +192,8 @@ bashful = Bashful(spirits, 515, 635)
 pokey = Pokey(spirits, 15, 75)
 
 running = True
+pacman_is_dead = False
+
 board.render()
 
 while running:
@@ -199,8 +201,8 @@ while running:
         pacman.get_event(event)
         if event.type == pygame.QUIT:
             terminate()
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            print(event.pos)
+    if pacman_is_dead:
+        break
     if f:
         start_screen()
     else:
@@ -219,7 +221,12 @@ while running:
                 spirit.update(len(pygame.sprite.spritecollide(spirit,
                                                               walls,
                                                               False)))
-        pygame.sprite.spritecollide(pacman, food, True)
+        if pygame.sprite.spritecollideany(pacman, spirits):
+            pacman_is_dead = True
+        if pygame.sprite.spritecollideany(pacman, food):
+            score += 1
+            pygame.sprite.spritecollide(pacman, food, True)
+        # pygame.sprite.spritecollide(pacman, food, True)
         pac_group.draw(screen)
         spirits.draw(screen)
         clock.tick(fps)
