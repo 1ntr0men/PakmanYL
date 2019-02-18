@@ -181,17 +181,26 @@ score = 0
 clock = pygame.time.Clock()
 fps = 30
 pac_group = pygame.sprite.Group()
+spirits = pygame.sprite.Group()
 fon = pygame.transform.scale(load_image('fon.png'), (560, 620))
 board = Board(screen)
-pacman = PacMan(pac_group, board, 270, 511)
+
+pacman = PacMan(pac_group, 270, 511)
+shadow = Shadow(spirits, 515, 75)
+speedy = Speedy(spirits, 15, 635)
+bashful = Bashful(spirits, 515, 635)
+pokey = Pokey(spirits, 15, 75)
+
 running = True
 board.render()
+
 while running:
     for event in pygame.event.get():
         pacman.get_event(event)
-        # pacman.get_moution_f(True)
         if event.type == pygame.QUIT:
             terminate()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            print(event.pos)
     if f:
         start_screen()
     else:
@@ -201,11 +210,18 @@ while running:
         walls.draw(screen)
         energizer.draw(screen)
         food.draw(screen)
-
-        pac_group.draw(screen)
         if pacman.get_moution_f():
-            pac_group.update(len(pygame.sprite.spritecollide(pacman, walls, False)))
+            pac_group.update(len(pygame.sprite.spritecollide(pacman,
+                                                             walls,
+                                                             False)))
+        for spirit in spirits:
+            if spirit.get_moution_f():
+                spirit.update(len(pygame.sprite.spritecollide(spirit,
+                                                              walls,
+                                                              False)))
         pygame.sprite.spritecollide(pacman, food, True)
+        pac_group.draw(screen)
+        spirits.draw(screen)
         clock.tick(fps)
 
-    pygame.display.flip()
+        pygame.display.flip()

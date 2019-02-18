@@ -1,4 +1,5 @@
 import pygame
+from random import choice
 import math
 
 pygame.init()
@@ -41,7 +42,7 @@ board = [[1] * 29,
 # Класс объекта
 class Object(pygame.sprite.Sprite):
 
-    def __init__(self, group, board, sheet, columns, rows, x, y):
+    def __init__(self, group, sheet, columns, rows, x, y):
         super().__init__(group)
         self.frames = []
         self.cut_sheet(sheet, columns, rows)
@@ -54,7 +55,7 @@ class Object(pygame.sprite.Sprite):
         self.speed_x = None
         self.speed_y = None
         self.direction = 'LEFT'
-        self.board = board
+        self.motion = False
 
     def cut_sheet(self, sheet, columns, rows):
         self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
@@ -68,39 +69,33 @@ class Object(pygame.sprite.Sprite):
 
 # Класс Пак-мана
 class PacMan(Object):
-    def __init__(self, group, board, x, y):
+    def __init__(self, group, x, y):
         image = pygame.image.load('data/pacman.png')
-        super().__init__(group, board, image, 4, 1, x, y)
+        super().__init__(group, image, 4, 1, x, y)
         self.speed_x = -4
         self.speed_y = 0
         self.image = pygame.transform.rotate(self.image, 180)
         self.rect = self.image.get_rect()
         self.rect.x = x
         self.rect.y = y
-        self.moution = True
 
     def get_event(self, event):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_DOWN:
-                self.moution = True
+                self.motion = True
                 self.direction = 'DOWN'
             if event.key == pygame.K_UP:
-                self.moution = True
+                self.motion = True
                 self.direction = 'UP'
             if event.key == pygame.K_LEFT:
-                self.moution = True
+                self.motion = True
                 self.direction = 'LEFT'
             if event.key == pygame.K_RIGHT:
-                self.moution = True
+                self.motion = True
                 self.direction = 'RIGHT'
 
-    def get_cell(self, c):
-        xx = c[0] // 20 + 1
-        yy = c[1] // 20 + 1
-        return xx, yy
-
     def get_moution_f(self):
-        return self.moution
+        return self.motion
 
     def update(self, n):
         if n == 0:
@@ -126,7 +121,7 @@ class PacMan(Object):
             self.image = pygame.transform.rotate(self.image, angle)
             self.rect = self.rect.move(self.speed_x, self.speed_y)
         else:
-            self.moution = False
+            self.motion = False
             self.speed_x = 0
             self.speed_y = 0
             if self.direction == 'LEFT':
@@ -141,12 +136,13 @@ class PacMan(Object):
 
 # Класс призраков
 class Spirit(Object):
-    def __init__(self, group, board, x, y):
+    def __init__(self, group, x, y):
         sheet = pygame.image.load(
             'data/{}.png'.format(self.__class__.__name__)
         )
-        super().__init__(group, board, sheet, 8, 1, x, y)
-        self.direction = 'UP'
+        super().__init__(group, sheet, 8, 1, x, y)
+        self.motion = True
+        self.direction = 'DOWN'
         self.current_frames = self.get_frames(self.direction)
 
     def get_frames(self, direction):
@@ -159,11 +155,46 @@ class Spirit(Object):
         else:
             return self.frames[6:8]
 
-    def update(self):
-        self.current_frames = self.get_frames(self.direction)
-        self.cur_frame = (self.cur_frame + 1) % 2
-        self.image = self.current_frames[self.cur_frame]
-        self.image = pygame.transform.scale(self.image, (30, 30))
+    def get_moution_f(self):
+        return self.motion
+
+    def update(self, n):
+        if n == 0:
+            if self.direction == 'LEFT':
+                self.speed_x = -4
+                self.speed_y = 0
+            elif self.direction == 'RIGHT':
+                self.speed_x = 4
+                self.speed_y = 0
+            elif self.direction == 'DOWN':
+                self.speed_x = 0
+                self.speed_y = 4
+            else:
+                self.speed_x = 0
+                self.speed_y = -4
+
+            self.current_frames = self.get_frames(self.direction)
+
+            self.cur_frame = (self.cur_frame + 1) % 2
+            self.image = self.current_frames[self.cur_frame]
+            self.rect = self.rect.move(self.speed_x, self.speed_y)
+            self.image = pygame.transform.scale(self.image, (30, 30))
+        else:
+            self.motion = False
+            self.speed_x = 0
+            self.speed_y = 0
+            if self.direction == 'LEFT':
+                self.rect.x += 5
+            elif self.direction == 'RIGHT':
+                self.rect.x -= 5
+            elif self.direction == 'DOWN':
+                self.rect.y -= 5
+            else:
+                self.rect.y += 5
+            directions = ['UP', 'LEFT', 'DOWN', 'RIGHT']
+            del directions[directions.index(self.direction)]
+            self.direction = choice(directions)
+            self.motion = True
 
 
 # Класс красного призрака
@@ -172,46 +203,16 @@ class Shadow(Spirit):
 
 
 class Speedy(Spirit):
-    pass
+    def __init__(self, group, x, y):
+        super().__init__(group, x, y)
+        self.direction = 'UP'
 
 
 class Bashful(Spirit):
-    pass
+    def __init__(self, group, x, y):
+        super().__init__(group, x, y)
+        self.direction = 'UP'
 
 
 class Pokey(Spirit):
     pass
-
-#
-# screen = pygame.display.set_mode((500, 500))
-# running = True
-# all_sprites = pygame.sprite.Group()
-# pacman = PacMan(all_sprites, 60, 0)
-# pink = Pokey(all_sprites, 60, 60)
-# fps = 30
-# clock = pygame.time.Clock()
-# all_sprites.add(pacman, pink)
-# while running:
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             running = False
-#         if event.type == pygame.KEYDOWN:
-#             if event.key == pygame.K_DOWN:
-#                 pacman.direction = 'DOWN'
-#                 pink.direction = 'DOWN'
-#             if event.key == pygame.K_UP:
-#                 pacman.direction = 'UP'
-#                 pink.direction = 'UP'
-#             if event.key == pygame.K_LEFT:
-#                 pacman.direction = 'LEFT'
-#                 pink.direction = 'LEFT'
-#             if event.key == pygame.K_RIGHT:
-#                 pacman.direction = 'RIGHT'
-#                 pink.direction = 'RIGHT'
-#
-#     screen.fill((255, 255, 255))
-#     all_sprites.draw(screen)
-#     all_sprites.update()
-#
-#     clock.tick(fps)
-#     pygame.display.flip()
