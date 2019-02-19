@@ -36,8 +36,6 @@ class Wall(pygame.sprite.Sprite):
                                     pygame.SRCALPHA, 32)
 
         self.rect = self.image.get_rect()
-        pygame.draw.rect(self.image, pygame.Color("Red"),
-                         self.rect, 0)
         self.rect.x = x
         self.rect.y = y
 
@@ -138,6 +136,10 @@ def start_screen():
         text_coord += intro_rect.height
         screen.blit(string_rendered, intro_rect)
 
+    pygame.mixer.music.load('data/start.mp3')
+    pygame.mixer.music.set_volume(0.25)
+    pygame.mixer.music.play(-1)
+
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -146,8 +148,10 @@ def start_screen():
                     event.type == pygame.MOUSEBUTTONDOWN:
                 f = False
                 return
-
         pygame.display.flip()
+
+
+life = 3
 
 
 def get_score():
@@ -161,7 +165,7 @@ def get_score():
         intro_rect.x = i * -200 + 200
         text_coord += intro_rect.height
         screen.blit(string_rendered, intro_rect)
-    life = 3
+    global life
     life_image = pygame.transform.scale(load_image('life2.png'),
                                         (40, 40))
     for j in range(life):
@@ -201,11 +205,12 @@ while running:
         pacman.get_event(event)
         if event.type == pygame.QUIT:
             terminate()
-    if pacman_is_dead:
+    if life == 0:
         break
     if f:
         start_screen()
     else:
+        pygame.mixer.music.stop()
         screen.fill((0, 0, 0))
         get_score()
         screen.blit(fon, (0, 60))
@@ -222,11 +227,15 @@ while running:
                                                               walls,
                                                               False)))
         if pygame.sprite.spritecollideany(pacman, spirits):
-            pacman_is_dead = True
+            life -= 1
+            pacman.kill()
+            pacman = PacMan(pac_group, 270, 511)
+
         if pygame.sprite.spritecollideany(pacman, food):
-            score += 1
+            score += 10
             pygame.sprite.spritecollide(pacman, food, True)
         # pygame.sprite.spritecollide(pacman, food, True)
+
         pac_group.draw(screen)
         spirits.draw(screen)
         clock.tick(fps)
