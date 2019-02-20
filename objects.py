@@ -110,7 +110,6 @@ class PacMan(Object):
             rect = pygame.Rect(x + 35, y, 10, 35)
 
         for wall in self.walls:
-            print(rect.collidepoint(wall.rect.center))
             if rect.collidepoint(wall.rect.center):
                 break
         else:
@@ -162,6 +161,10 @@ class PacMan(Object):
                 self.rect.y -= 5
             else:
                 self.rect.y += 5
+        if self.rect.x > 595:
+            self.rect.x = -35
+        elif self.rect.x < -35:
+            self.rect.x = 595
 
 
 # Класс призраков
