@@ -19,7 +19,8 @@ class Food(pygame.sprite.Sprite):
 
 
 class Energizer(pygame.sprite.Sprite):
-    image = pygame.transform.scale(pygame.image.load('data/big_food.png'), (20, 20))
+    image = pygame.transform.scale(pygame.image.load('data/big_food.png'),
+                                   (20, 20))
 
     def __init__(self, x, y):
         super().__init__(energizer)
@@ -189,11 +190,11 @@ walls = pygame.sprite.Group()
 fon = pygame.transform.scale(load_image('fon.png'), (560, 620))
 board = Board(screen)
 
-pacman = PacMan(pac_group, 270, 511)
-shadow = Shadow(spirits, 515, 75)
-speedy = Speedy(spirits, 15, 635)
-bashful = Bashful(spirits, 515, 635)
-pokey = Pokey(spirits, 15, 75)
+pacman = PacMan(pac_group, walls, 270, 511)
+shadow = Shadow(spirits, walls, 515, 75)
+speedy = Speedy(spirits, walls, 15, 635)
+bashful = Bashful(spirits, walls, 515, 635)
+pokey = Pokey(spirits, walls, 15, 75)
 
 running = True
 pacman_is_dead = False
@@ -229,7 +230,7 @@ while running:
         if pygame.sprite.spritecollideany(pacman, spirits):
             life -= 1
             pacman.kill()
-            pacman = PacMan(pac_group, 270, 511)
+            pacman = PacMan(pac_group, walls, 270, 511)
 
         if pygame.sprite.spritecollideany(pacman, food):
             score += 10
