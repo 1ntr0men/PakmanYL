@@ -187,6 +187,10 @@ food = pygame.sprite.Group()
 energizer = pygame.sprite.Group()
 walls = pygame.sprite.Group()
 
+pygame.mixer.music.load('data/start.mp3')
+pygame.mixer.music.set_volume(0.25)
+pygame.mixer.music.play(-1)
+
 fon = pygame.transform.scale(load_image('fon.png'), (560, 620))
 board = Board(screen)
 
