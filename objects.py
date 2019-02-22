@@ -230,6 +230,47 @@ class Spirit(Object):
             self.motion = True
 
 
+class WeakSpirit(Spirit):
+    def update(self, n):
+        if n == 0:
+            if self.direction == 'LEFT':
+                self.speed_x = -2
+                self.speed_y = 0
+            elif self.direction == 'RIGHT':
+                self.speed_x = 2
+                self.speed_y = 0
+            elif self.direction == 'DOWN':
+                self.speed_x = 0
+                self.speed_y = 2
+            else:
+                self.speed_x = 0
+                self.speed_y = -2
+
+            self.current_frames = self.get_frames(self.direction)
+
+            self.cur_frame = (self.cur_frame + 1) % 2
+            self.image = self.current_frames[self.cur_frame]
+            self.rect = self.rect.move(self.speed_x, self.speed_y)
+            self.image = pygame.transform.scale(self.image, (30, 30))
+
+        else:
+            self.motion = False
+            self.speed_x = 0
+            self.speed_y = 0
+            if self.direction == 'LEFT':
+                self.rect.x += 5
+            elif self.direction == 'RIGHT':
+                self.rect.x -= 5
+            elif self.direction == 'DOWN':
+                self.rect.y -= 5
+            else:
+                self.rect.y += 5
+            directions = ['UP', 'LEFT', 'DOWN', 'RIGHT']
+            del directions[directions.index(self.direction)]
+            self.direction = choice(directions)
+            self.motion = True
+
+
 # Класс красного призрака
 class Shadow(Spirit):
     pass
