@@ -232,7 +232,7 @@ speedy = Speedy(spirits, walls, 15, 635)
 bashful = Bashful(spirits, walls, 515, 635)
 pokey = Pokey(spirits, walls, 15, 75)
 
-life = 1
+life = 3
 running = True
 pacman_is_dead = False
 
