@@ -1,7 +1,24 @@
 import pygame
 from random import choice
+import os
 
 pygame.init()
+
+
+def load_image(name, colorkey=None):
+    fullname = os.path.join('data', name)
+    try:
+        image = pygame.image.load(fullname)
+    except pygame.error as message:
+        print('Cannot load image:', name)
+        raise SystemExit(message)
+    image = image.convert_alpha()
+    if colorkey is not None:
+        if colorkey is -1:
+            colorkey = image.get_at((0, 0))
+        image.set_colorkey(colorkey)
+    return image
+
 
 board = [[1] * 29,
          [1] + [2] * 12 + [1] * 2 + [2] * 12 + [1],
@@ -170,12 +187,14 @@ class PacMan(Object):
 # Класс призраков
 class Spirit(Object):
     def __init__(self, group, walls, x, y):
-        sheet = pygame.image.load(
+        self.sheet = pygame.image.load(
             'data/{}.png'.format(self.__class__.__name__)
         )
-        super().__init__(group, walls, sheet, 8, 1, x, y)
+        super().__init__(group, walls, self.sheet, 8, 1, x, y)
         self.motion = True
         self.direction = 'DOWN'
+        self.v = 4
+        self.e = False
         self.current_frames = self.get_frames(self.direction)
 
     def get_frames(self, direction):
@@ -192,22 +211,40 @@ class Spirit(Object):
         return self.motion
 
     def update(self, n):
-        if n == 0:
+        if self.e and n == 0:
             if self.direction == 'LEFT':
-                self.speed_x = -4
+                self.speed_x = -1 * self.v
                 self.speed_y = 0
             elif self.direction == 'RIGHT':
-                self.speed_x = 4
+                self.speed_x = self.v
                 self.speed_y = 0
             elif self.direction == 'DOWN':
                 self.speed_x = 0
-                self.speed_y = 4
+                self.speed_y = self.v
             else:
                 self.speed_x = 0
-                self.speed_y = -4
+                self.speed_y = -1 * self.v
+            # self.image = pygame.transform.scale(load_image("WeakSpirit11.png"), (30, 30))
+            self.current_frames = self.get_frames(self.direction)
+            self.cur_frame = (self.cur_frame + 1) % 2
+            self.image = self.current_frames[self.cur_frame]
+            self.rect = self.rect.move(self.speed_x, self.speed_y)
+            self.image = pygame.transform.scale(self.image, (30, 30))
+        elif n == 0 and not self.e:
+            if self.direction == 'LEFT':
+                self.speed_x = -1 * self.v
+                self.speed_y = 0
+            elif self.direction == 'RIGHT':
+                self.speed_x = self.v
+                self.speed_y = 0
+            elif self.direction == 'DOWN':
+                self.speed_x = 0
+                self.speed_y = self.v
+            else:
+                self.speed_x = 0
+                self.speed_y = -1 * self.v
 
             self.current_frames = self.get_frames(self.direction)
-
             self.cur_frame = (self.cur_frame + 1) % 2
             self.image = self.current_frames[self.cur_frame]
             self.rect = self.rect.move(self.speed_x, self.speed_y)
@@ -229,46 +266,55 @@ class Spirit(Object):
             self.direction = choice(directions)
             self.motion = True
 
-
-class WeakSpirit(Spirit):
-    def update(self, n):
-        if n == 0:
-            if self.direction == 'LEFT':
-                self.speed_x = -2
-                self.speed_y = 0
-            elif self.direction == 'RIGHT':
-                self.speed_x = 2
-                self.speed_y = 0
-            elif self.direction == 'DOWN':
-                self.speed_x = 0
-                self.speed_y = 2
-            else:
-                self.speed_x = 0
-                self.speed_y = -2
-
-            self.current_frames = self.get_frames(self.direction)
-
-            self.cur_frame = (self.cur_frame + 1) % 2
-            self.image = self.current_frames[self.cur_frame]
-            self.rect = self.rect.move(self.speed_x, self.speed_y)
-            self.image = pygame.transform.scale(self.image, (30, 30))
-
+    def enerji(self, ff):
+        if ff:
+            self.v = 2
+            self.e = True
         else:
-            self.motion = False
-            self.speed_x = 0
-            self.speed_y = 0
-            if self.direction == 'LEFT':
-                self.rect.x += 5
-            elif self.direction == 'RIGHT':
-                self.rect.x -= 5
-            elif self.direction == 'DOWN':
-                self.rect.y -= 5
-            else:
-                self.rect.y += 5
-            directions = ['UP', 'LEFT', 'DOWN', 'RIGHT']
-            del directions[directions.index(self.direction)]
-            self.direction = choice(directions)
-            self.motion = True
+            self.sheet = pygame.image.load('data/{}.png'.format(self.__class__.__name__))
+            self.v = 4
+            self.e = False
+
+
+# class WeakSpirit(Spirit):
+#     def update(self, n):
+#         if n == 0:
+#             if self.direction == 'LEFT':
+#                 self.speed_x = -2
+#                 self.speed_y = 0
+#             elif self.direction == 'RIGHT':
+#                 self.speed_x = 2
+#                 self.speed_y = 0
+#             elif self.direction == 'DOWN':
+#                 self.speed_x = 0
+#                 self.speed_y = 2
+#             else:
+#                 self.speed_x = 0
+#                 self.speed_y = -2
+#
+#             self.current_frames = self.get_frames(self.direction)
+#
+#             self.cur_frame = (self.cur_frame + 1) % 2
+#             self.image = self.current_frames[self.cur_frame]
+#             self.rect = self.rect.move(self.speed_x, self.speed_y)
+#             self.image = pygame.transform.scale(self.image, (30, 30))
+#
+#         else:
+#             self.motion = False
+#             self.speed_x = 0
+#             self.speed_y = 0
+#             if self.direction == 'LEFT':
+#                 self.rect.x += 5
+#             elif self.direction == 'RIGHT':
+#                 self.rect.x -= 5
+#             elif self.direction == 'DOWN':
+#                 self.rect.y -= 5
+#             else:
+#                 self.rect.y += 5
+#             directions = ['UP', 'LEFT', 'DOWN', 'RIGHT']
+#             del directions[directions.index(self.direction)]
+#             self.direction = choice(directions)
+#             self.motion = True
 
 
 # Класс красного призрака

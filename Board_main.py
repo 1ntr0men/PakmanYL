@@ -155,6 +155,7 @@ def start_screen():
 def get_score():
     intro_text = ["HIGH SCORE", str(score)]
     text_coord = 0
+
     font = pygame.font.Font(None, 32)
     for i in range(2):
         string_rendered = font.render(intro_text[i], 1, pygame.Color('White'))
@@ -172,22 +173,27 @@ def get_score():
 
 def win_screen():
     global f
-    intro_text = ["Нажмите любую клавишу"]
-
+    screen.fill((0, 0, 0))
     fon = pygame.transform.scale(load_image('win.jpg'), (560, 315))
     screen.blit(fon, (0, 100))
-    font = pygame.font.Font(None, 30)
-    text_coord = 300
-    for line in intro_text:
-        string_rendered = font.render(line, 1, pygame.Color('black'))
-        intro_rect = string_rendered.get_rect()
-        text_coord += 10
-        intro_rect.top = text_coord
-        intro_rect.x = 160
-        text_coord += intro_rect.height
-        screen.blit(string_rendered, intro_rect)
-
     pygame.mixer.music.load('data/start.mp3')
+    pygame.mixer.music.set_volume(0.25)
+    pygame.mixer.music.play(-1)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+                return
+        pygame.display.flip()
+
+
+def defeat_screen():
+    global f
+    screen.fill((0, 0, 0))
+    fon = pygame.transform.scale(load_image('defeat_screen.jpg'), (560, 315))
+    screen.blit(fon, (0, 100))
+    pygame.mixer.music.load('data/death.mp3')
     pygame.mixer.music.set_volume(0.25)
     pygame.mixer.music.play(-1)
 
@@ -226,7 +232,7 @@ speedy = Speedy(spirits, walls, 15, 635)
 bashful = Bashful(spirits, walls, 515, 635)
 pokey = Pokey(spirits, walls, 15, 75)
 
-life = 3
+life = 1
 running = True
 pacman_is_dead = False
 
@@ -238,7 +244,7 @@ while running:
         if event.type == pygame.QUIT:
             terminate()
     if life == 0:
-        break
+        defeat_screen()
     if f:
         start_screen()
     else:
@@ -270,8 +276,14 @@ while running:
             win_screen()
         # pygame.sprite.spritecollide(pacman, food, True)
 
+        if pygame.sprite.spritecollideany(pacman, energizer):
+            pygame.sprite.spritecollide(pacman, energizer, True)
+            shadow.enerji(True)
+            speedy.enerji(True)
+            bashful.enerji(True)
+            pokey.enerji(True)
+
         pac_group.draw(screen)
         spirits.draw(screen)
         clock.tick(fps)
-
         pygame.display.flip()
