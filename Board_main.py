@@ -152,7 +152,7 @@ def start_screen():
         pygame.display.flip()
 
 
-life = 3
+life = 10
 
 
 def get_score():
@@ -171,6 +171,35 @@ def get_score():
                                         (40, 40))
     for j in range(life):
         screen.blit(life_image, (j * 40 + 40, 680))
+
+
+def win_screen():
+    global f
+    intro_text = ["Нажмите любую клавишу"]
+
+    fon = pygame.transform.scale(load_image('win.jpg'), (560, 315))
+    screen.blit(fon, (0, 100))
+    font = pygame.font.Font(None, 30)
+    text_coord = 300
+    for line in intro_text:
+        string_rendered = font.render(line, 1, pygame.Color('black'))
+        intro_rect = string_rendered.get_rect()
+        text_coord += 10
+        intro_rect.top = text_coord
+        intro_rect.x = 160
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+
+    pygame.mixer.music.load('data/start.mp3')
+    pygame.mixer.music.set_volume(0.25)
+    pygame.mixer.music.play(-1)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+                return
+        pygame.display.flip()
 
 
 size = width, height = 560, 720
@@ -239,6 +268,8 @@ while running:
         if pygame.sprite.spritecollideany(pacman, food):
             score += 10
             pygame.sprite.spritecollide(pacman, food, True)
+        if len(food) == 0:
+            win_screen()
         # pygame.sprite.spritecollide(pacman, food, True)
 
         pac_group.draw(screen)
