@@ -75,7 +75,7 @@ class Object(pygame.sprite.Sprite):
         elif direction == 'LEFT':
             rect = pygame.Rect(x - 5, y, 5, 35)
         else:
-            rect = pygame.Rect(x + 35, y, 3, 35)
+            rect = pygame.Rect(x + 35, y, 5, 35)
 
         for wall in self.walls:
             if rect.colliderect(wall.rect):
