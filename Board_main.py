@@ -59,7 +59,7 @@ class Board:
                       [1] * 6 + [2] + [1] * 5 + [0] + [1] * 2 + [0] + [1] * 5 + [2] + [1] * 6,
                       [1] * 6 + [2] + [1] * 5 + [0] + [1] * 2 + [0] + [1] * 5 + [2] + [1] * 6,
                       [1] * 6 + [2] + [1] * 2 + [0] * 10 + [1] * 2 + [2] + [1] * 6,
-                      [1] * 6 + [2] + [1] * 2 + [0] + [1] * 3 + [0] * 2 + [1] * 3 + [0] + [1] * 2 + [2] + [1] * 6,
+                      [1] * 6 + [2] + [1] * 2 + [0] + [1] * 8 + [0] + [1] * 2 + [2] + [1] * 6,
                       [1] * 6 + [2] + [1] * 2 + [0] + [1] + [0] * 6 + [1] + [0] + [1] * 2 + [2] + [1] * 6,
                       [0] * 6 + [2] + [0] * 3 + [1] + [0] * 6 + [1] + [0] * 3 + [2] + [0] * 6,
                       [1] * 6 + [2] + [1] * 2 + [0] + [1] + [0] * 6 + [1] + [0] + [1] * 2 + [2] + [1] * 6,
@@ -233,6 +233,7 @@ bashful = Bashful(spirits, walls, 515, 635)
 pokey = Pokey(spirits, walls, 15, 75)
 
 life = 3
+eat = False
 running = True
 pacman_is_dead = False
 
@@ -265,9 +266,17 @@ while running:
                                                               walls,
                                                               False)))
         if pygame.sprite.spritecollideany(pacman, spirits):
-            life -= 1
-            pacman.kill()
-            pacman = PacMan(pac_group, walls, 270, 511)
+            if not eat:
+                life -= 1
+                pacman.kill()
+                pacman = PacMan(pac_group, walls, 270, 511)
+            else:
+                pygame.sprite.spritecollide(pacman, spirits, True)
+                shadow.enerji(False)
+                speedy.enerji(False)
+                bashful.enerji(False)
+                pokey.enerji(False)
+                eat = False
 
         if pygame.sprite.spritecollideany(pacman, food):
             score += 10
@@ -282,6 +291,7 @@ while running:
             speedy.enerji(True)
             bashful.enerji(True)
             pokey.enerji(True)
+            eat = True
 
         pac_group.draw(screen)
         spirits.draw(screen)

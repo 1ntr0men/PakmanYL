@@ -224,12 +224,11 @@ class Spirit(Object):
             else:
                 self.speed_x = 0
                 self.speed_y = -1 * self.v
-            # self.image = pygame.transform.scale(load_image("WeakSpirit11.png"), (30, 30))
+
             self.current_frames = self.get_frames(self.direction)
             self.cur_frame = (self.cur_frame + 1) % 2
-            self.image = self.current_frames[self.cur_frame]
+            self.image = pygame.transform.scale(load_image("WeakSpirit11.png"), (30, 30))
             self.rect = self.rect.move(self.speed_x, self.speed_y)
-            self.image = pygame.transform.scale(self.image, (30, 30))
         elif n == 0 and not self.e:
             if self.direction == 'LEFT':
                 self.speed_x = -1 * self.v
@@ -268,6 +267,8 @@ class Spirit(Object):
 
     def enerji(self, ff):
         if ff:
+            # self.image = load_image("WeakSpirit.png")
+            self.sheet = load_image("WeakSpirit.png")
             self.v = 2
             self.e = True
         else:
