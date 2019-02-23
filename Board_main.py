@@ -232,6 +232,7 @@ speedy = Speedy(spirits, walls, 15, 635)
 bashful = Bashful(spirits, walls, 515, 635)
 pokey = Pokey(spirits, walls, 15, 75)
 
+CORNERS = ((15, 75), (15, 635), (515, 75), (515, 635))
 life = 3
 eat = False
 running = True
@@ -244,6 +245,8 @@ while running:
         pacman.get_event(event)
         if event.type == pygame.QUIT:
             terminate()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            print(event.pos)
     if life == 0:
         defeat_screen()
     if f:
@@ -259,33 +262,31 @@ while running:
         pac_group.update()
         spirits.update()
 
-
-        if pygame.sprite.spritecollideany(pacman, spirits):
-            if not eat:
-                life -= 1
-                pacman.kill()
-                pacman = PacMan(pac_group, walls, 270, 511)
-            else:
-                pygame.sprite.spritecollide(pacman, spirits, True)
-                shadow.enerji(False)
-                speedy.enerji(False)
-                bashful.enerji(False)
-                pokey.enerji(False)
-                eat = False
+        for spirit in spirits:
+            if pacman.rect.collidepoint(spirit.rect.center):
+                if not eat:
+                    life -= 1
+                    pacman.kill()
+                    pacman = PacMan(pac_group, walls, 270, 511)
+                else:
+                    x, y = choice(CORNERS)
+                    while pygame.Rect(x, y, 20, 20).colliderect(pacman.rect):
+                        x, y = choice(CORNERS)
+                    for sp in spirits:
+                        sp.energy(False)
+                    spirit.rect.x, spirit.rect.y = x, y
+                    eat = False
 
         if pygame.sprite.spritecollideany(pacman, food):
             score += 10
             pygame.sprite.spritecollide(pacman, food, True)
         if len(food) == 0:
             win_screen()
-        # pygame.sprite.spritecollide(pacman, food, True)
 
         if pygame.sprite.spritecollideany(pacman, energizer):
             pygame.sprite.spritecollide(pacman, energizer, True)
-            shadow.enerji(True)
-            speedy.enerji(True)
-            bashful.enerji(True)
-            pokey.enerji(True)
+            for spirit in spirits:
+                spirit.energy(True)
             eat = True
 
         pac_group.draw(screen)

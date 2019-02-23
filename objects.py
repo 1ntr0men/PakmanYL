@@ -202,7 +202,7 @@ class Spirit(Object):
         elif self.rect.x < -35:
             self.rect.x = 595
 
-    def enerji(self, ff):
+    def energy(self, ff):
         if ff:
             # self.image = load_image("WeakSpirit.png")
             self.sheet = load_image("WeakSpirit.png")
@@ -212,6 +212,7 @@ class Spirit(Object):
             self.sheet = pygame.image.load('data/{}.png'.format(self.__class__.__name__))
             self.v = 4
             self.e = False
+
 
 
 # Класс красного призрака
