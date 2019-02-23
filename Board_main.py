@@ -256,15 +256,10 @@ while running:
         walls.draw(screen)
         energizer.draw(screen)
         food.draw(screen)
-        if pacman.get_moution_f():
-            pac_group.update(len(pygame.sprite.spritecollide(pacman,
-                                                             walls,
-                                                             False)))
-        for spirit in spirits:
-            if spirit.get_moution_f():
-                spirit.update(len(pygame.sprite.spritecollide(spirit,
-                                                              walls,
-                                                              False)))
+        pac_group.update()
+        spirits.update()
+
+
         if pygame.sprite.spritecollideany(pacman, spirits):
             if not eat:
                 life -= 1
