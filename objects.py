@@ -149,11 +149,6 @@ class PacMan(Object):
             self.image = pygame.transform.rotate(self.image, self.angle)
             self.rect = self.rect.move(self.speed_x, self.speed_y)
 
-        if self.rect.x > 595:
-            self.rect.x = -35
-        elif self.rect.x < -35:
-            self.rect.x = 595
-
 
 # Класс призраков
 class Spirit(Object):
@@ -183,9 +178,12 @@ class Spirit(Object):
         if self.motion:
             directions = []
             for direction in ['UP', 'DOWN', 'LEFT', 'RIGHT']:
-                if self.check_direction(direction, 5) and self.opposite[direction] != self.direction:
+                if self.check_direction(direction, 6) and self.opposite[direction] != self.direction:
                     directions.append(direction)
-            self.direction = choice(directions)
+            if directions:
+                self.direction = choice(directions)
+            else:
+                self.direction = self.opposite[self.direction]
             self.motion = False
         else:
             self.motion = True
@@ -206,12 +204,7 @@ class Spirit(Object):
             self.rect = self.rect.move(self.speed_x, self.speed_y)
             self.image = pygame.transform.scale(self.image, (30, 30))
 
-        if self.rect.x > 595:
-            self.rect.x = -35
-        elif self.rect.x < -35:
-            self.rect.x = 595
-
-    def enerji(self, ff):
+    def energy(self, ff):
         if ff:
             # self.image = load_image("WeakSpirit.png")
             self.sheet = load_image("WeakSpirit.png")
