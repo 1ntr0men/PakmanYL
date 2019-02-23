@@ -190,12 +190,21 @@ class Spirit(Object):
         else:
             self.motion = True
 
-        self.change_speed(self.v)
-        self.current_frames = self.get_frames(self.direction)
-        self.cur_frame = (self.cur_frame + 1) % 2
-        self.image = self.current_frames[self.cur_frame]
-        self.rect = self.rect.move(self.speed_x, self.speed_y)
-        self.image = pygame.transform.scale(self.image, (30, 30))
+        if not self.e:
+            self.change_speed(self.v)
+            self.current_frames = self.get_frames(self.direction)
+            self.cur_frame = (self.cur_frame + 1) % 2
+            self.image = self.current_frames[self.cur_frame]
+            self.rect = self.rect.move(self.speed_x, self.speed_y)
+            self.image = pygame.transform.scale(self.image, (30, 30))
+        else:
+            self.change_speed(self.v)
+            self.current_frames = self.get_frames(self.direction)
+            self.cur_frame = (self.cur_frame + 1) % 2
+            self.image = self.current_frames[self.cur_frame]
+            self.image = load_image("WeakSpirit11.png")
+            self.rect = self.rect.move(self.speed_x, self.speed_y)
+            self.image = pygame.transform.scale(self.image, (30, 30))
 
         if self.rect.x > 595:
             self.rect.x = -35
