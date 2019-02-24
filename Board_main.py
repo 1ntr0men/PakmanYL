@@ -285,7 +285,7 @@ while running:
         if pygame.sprite.spritecollideany(pacman, food):
             score += 10
             pygame.sprite.spritecollide(pacman, food, True)
-        if len(food) == 0:
+        if len(food) + len(energizer) == 0:
             win_screen()
 
         if pygame.sprite.spritecollideany(pacman, energizer):
