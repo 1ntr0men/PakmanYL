@@ -290,6 +290,7 @@ while running:
 
         if pygame.sprite.spritecollideany(pacman, energizer):
             pygame.sprite.spritecollide(pacman, energizer, True)
+            score += 50
             for spirit in spirits:
                 spirit.energy(True)
             eat = True
