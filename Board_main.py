@@ -61,7 +61,7 @@ class Board:
                       [1] * 6 + [2] + [1] * 2 + [0] * 10 + [1] * 2 + [2] + [1] * 6,
                       [1] * 6 + [2] + [1] * 2 + [0] + [1] * 8 + [0] + [1] * 2 + [2] + [1] * 6,
                       [1] * 6 + [2] + [1] * 2 + [0] + [1] + [0] * 6 + [1] + [0] + [1] * 2 + [2] + [1] * 6,
-                      [0] * 6 + [2] + [0] * 3 + [1] + [0] * 6 + [1] + [0] * 3 + [2] + [0] * 6,
+                      [1] * 6 + [2] + [0] * 3 + [1] + [0] * 6 + [1] + [0] * 3 + [2] + [1] * 6,
                       [1] * 6 + [2] + [1] * 2 + [0] + [1] + [0] * 6 + [1] + [0] + [1] * 2 + [2] + [1] * 6,
                       [1] * 6 + [2] + [1] * 2 + [0] + [1] * 8 + [0] + [1] * 2 + [2] + [1] * 6,
                       [1] * 6 + [2] + [1] * 2 + [0] * 10 + [1] * 2 + [2] + [1] * 6,
@@ -259,11 +259,19 @@ while running:
         food.draw(screen)
 
         for spirit in spirits:
-            if pacman.rect.collidepoint(spirit.rect.center):
+            x0, y0 = spirit.rect.x + 11, spirit.rect.y + 11
+            rect = pygame.Rect(x0, y0, 15, 15)
+            if rect.collidepoint(pacman.rect.center):
                 if not eat:
                     life -= 1
                     pacman.kill()
+                    for sp in spirits:
+                        sp.kill()
                     pacman = PacMan(pac_group, walls, 270, 511)
+                    shadow = Shadow(spirits, walls, 515, 75)
+                    speedy = Speedy(spirits, walls, 15, 635)
+                    bashful = Bashful(spirits, walls, 515, 635)
+                    pokey = Pokey(spirits, walls, 15, 75)
                 else:
                     x, y, direction = choice(CORNERS)
                     while pygame.Rect(x, y, 20, 20).colliderect(pacman.rect):

@@ -161,6 +161,8 @@ class Spirit(Object):
         self.direction = 'DOWN'
         self.v = 4
         self.e = False
+        self.speed_x = None
+        self.speed_y = None
         self.opposite = {'UP': 'DOWN', 'DOWN': 'UP', 'RIGHT': 'LEFT', 'LEFT': 'RIGHT'}
         self.current_frames = self.get_frames(self.direction)
 
@@ -177,42 +179,37 @@ class Spirit(Object):
     def update(self):
         if self.motion:
             directions = []
-            for direction in ['UP', 'DOWN', 'LEFT', 'RIGHT']:
-                if self.check_direction(direction, 6) and self.opposite[direction] != self.direction:
-                    directions.append(direction)
+            while not directions:
+                for direction in ['UP', 'DOWN', 'LEFT', 'RIGHT']:
+                    if self.check_direction(direction, 6) and self.opposite[direction] != self.direction:
+                        directions.append(direction)
             if directions:
                 self.direction = choice(directions)
-            else:
-                self.direction = self.opposite[self.direction]
             self.motion = False
         else:
             self.motion = True
 
-        if not self.e:
-            self.change_speed(self.v)
-            self.current_frames = self.get_frames(self.direction)
-            self.cur_frame = (self.cur_frame + 1) % 2
-            self.image = self.current_frames[self.cur_frame]
-            self.rect = self.rect.move(self.speed_x, self.speed_y)
-            self.image = pygame.transform.scale(self.image, (30, 30))
-        else:
-            self.change_speed(self.v)
-            self.current_frames = self.get_frames(self.direction)
-            self.cur_frame = (self.cur_frame + 1) % 2
-            self.image = self.current_frames[self.cur_frame]
-            self.image = load_image("WeakSpirit11.png")
-            self.rect = self.rect.move(self.speed_x, self.speed_y)
-            self.image = pygame.transform.scale(self.image, (30, 30))
+        x, y = self.rect.x, self.rect.y
+        self.frames = []
+        self.cut_sheet(self.sheet, 8, 1)
+        self.cur_frame = (self.cur_frame + 1) % 2
+        self.frames = self.get_frames(self.direction)
+        self.image = self.frames[self.cur_frame]
+        self.image = pygame.transform.scale(self.image, (35, 35))
+        self.rect = self.image.get_rect()
+        self.rect = self.rect.move(x, y)
+
+        self.change_speed(self.v)
+        self.rect = self.rect.move(self.speed_x, self.speed_y)
 
     def energy(self, ff):
         if ff:
-            # self.image = load_image("WeakSpirit.png")
             self.sheet = load_image("WeakSpirit.png")
-            self.v = 2
+            # self.v = 2
             self.e = True
         else:
             self.sheet = pygame.image.load('data/{}.png'.format(self.__class__.__name__))
-            self.v = 4
+            # self.v = 4
             self.e = False
 
 
